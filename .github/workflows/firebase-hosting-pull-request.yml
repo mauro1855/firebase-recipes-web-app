@@ -41,6 +41,6 @@ jobs:
         run: npm install
 
       - name: 🚀 Deploy
-        run: npx firebase-tools deploy --token "$FIREBASE_TOKEN" --only functions
+        run: npx firebase-tools@11.1.0 deploy --only functions
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
