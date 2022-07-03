@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ImageUploadPreview from "./ImageUploadPreview";
 
 export default function AddEditRecipeForm({
   existingRecipe,
@@ -14,6 +15,7 @@ export default function AddEditRecipeForm({
       setDirections(existingRecipe.directions);
       setPublishDate(existingRecipe.publishDate.toISOString().split("T")[0]);
       setIngredients(existingRecipe.ingredients);
+      setImageUrl(existingRecipe.imageUrl);
     } else {
       resetForm();
     }
@@ -27,6 +29,7 @@ export default function AddEditRecipeForm({
   const [directions, setDirections] = useState("");
   const [ingredients, setIngredients] = useState([]);
   const [ingredientName, setIngredientName] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
 
   function handleRecipeFormSubmit(e) {
     e.preventDefault();
@@ -36,14 +39,20 @@ export default function AddEditRecipeForm({
       return;
     }
 
+    if (!imageUrl) {
+      alert("Missing recipe image. Please add a recipe image.");
+      return;
+    }
+
     const isPublished = new Date(publishDate) <= new Date();
     const newRecipe = {
       name,
       category,
       directions,
-      publishDate: new Date(publishDate),
+      publishDate: new Date(publishDate).getTime() / 1000,
       isPublished,
       ingredients,
+      imageUrl,
     };
 
     if (existingRecipe) {
@@ -77,6 +86,7 @@ export default function AddEditRecipeForm({
     setDirections("");
     setPublishDate("");
     setIngredients([]);
+    setImageUrl("");
   }
 
   return (
@@ -86,6 +96,15 @@ export default function AddEditRecipeForm({
     >
       {existingRecipe ? <h2>Update the recipe </h2> : <h2>Add a New Recipe</h2>}
       <div className="top-form-section">
+        <div className="image-input-box">
+          Recipe image
+          <ImageUploadPreview
+            basePath="recipes"
+            existingImageUrl={imageUrl}
+            handleUploadFinish={(downloadUrl) => setImageUrl(downloadUrl)}
+            handleUploadCancel={() => setImageUrl("")}
+          ></ImageUploadPreview>
+        </div>
         <div className="fields">
           <label className="recipe-label input-label">
             RecipeName:
